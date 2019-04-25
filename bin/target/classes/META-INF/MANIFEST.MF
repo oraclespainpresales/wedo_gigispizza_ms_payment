@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Built-By: fharris
+Class-Path: libs/helidon-bundles-webserver-1.0.0.jar libs/helidon-webs
+ erver-1.0.0.jar libs/helidon-common-reactive-1.0.0.jar libs/helidon-c
+ ommon-http-1.0.0.jar libs/helidon-media-common-1.0.0.jar libs/helidon
+ -common-key-util-1.0.0.jar libs/helidon-common-configurable-1.0.0.jar
+  libs/opentracing-util-0.31.0.jar libs/opentracing-api-0.31.0.jar lib
+ s/opentracing-noop-0.31.0.jar libs/netty-codec-http-4.1.30.Final.jar 
+ libs/netty-codec-4.1.30.Final.jar libs/netty-codec-http2-4.1.30.Final
+ .jar libs/netty-handler-4.1.30.Final.jar libs/netty-buffer-4.1.30.Fin
+ al.jar libs/netty-common-4.1.30.Final.jar libs/netty-transport-4.1.30
+ .Final.jar libs/netty-resolver-4.1.30.Final.jar libs/helidon-media-js
+ onp-server-1.0.0.jar libs/helidon-media-jsonp-common-1.0.0.jar libs/j
+ avax.json-1.1.2.jar libs/javax.json-api-1.1.2.jar libs/helidon-config
+ -yaml-1.0.0.jar libs/helidon-config-1.0.0.jar libs/reactor-core-3.1.5
+ .RELEASE.jar libs/reactive-streams-1.0.2.jar libs/helidon-common-1.0.
+ 0.jar libs/snakeyaml-1.19.jar libs/javax.annotation-api-1.3.1.jar lib
+ s/helidon-health-1.0.0.jar libs/microprofile-health-api-1.0.jar libs/
+ helidon-health-checks-1.0.0.jar libs/helidon-metrics-1.0.0.jar libs/m
+ icroprofile-metrics-api-1.1.jar libs/org.osgi.annotation.versioning-1
+ .0.0.jar
+Build-Jdk: 1.8.0_201
+Created-By: Maven Integration for Eclipse
+Main-Class: io.helidon.examples.quickstart.se.Main
+
