@@ -76,6 +76,15 @@ public class MainTest {
         os.close();
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
         
+        conn = getURLConnection("POST", "/helidon/selectpayment");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+        OutputStream os2 = conn.getOutputStream();
+        os2.write("{\"paymentid\" : \"1234\"}".getBytes());
+        os2.close();
+        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
+        
+              
         conn = getURLConnection("GET", "/health");
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response2");
 

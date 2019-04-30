@@ -16,13 +16,30 @@ import io.helidon.webserver.ServerResponse;
 */
 public class DatabaseClient
 {
- public String executecall(String paymentCode, String orderId, String paymentTime, String paymentMehtod, String serviceSurvey, String totalPayed, String customerId ) throws IOException
+ public String insertPayment(String paymentCode, String orderId, String paymentTime, String paymentMehtod, String serviceSurvey, String totalPayed, String customerId ) throws IOException
  {
 	 String dbresult = "";
 	 
     try
     {
-    	dbresult = runTest(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, totalPayed, customerId );
+    	dbresult = executeInsertPayment(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, totalPayed, customerId );
+    }
+    catch (SQLException ex)
+    {
+       for (Throwable t : ex)
+          t.printStackTrace();
+    }
+    
+    return dbresult;
+ }
+ 
+ public String[][] selectPayments(String paymentCode) throws IOException
+ {
+	 String[][] dbresult = {};
+	 
+    try
+    {
+    	dbresult = executeSelectPayments(paymentCode);
     }
     catch (SQLException ex)
     {
@@ -34,10 +51,10 @@ public class DatabaseClient
  }
 
  /**
-  * Runs a test by creating a table, adding a value, showing the table contents, and removing 
-  * the table.
+  * Executes the insert SQL operation against the database 
+  * 
   */
- public static String runTest(String paymentCd, String order, String payTime, String payMehtod, String servSurvey, String totPayed, String custId ) throws SQLException, IOException
+ public static String executeInsertPayment(String paymentCd, String order, String payTime, String payMehtod, String servSurvey, String totPayed, String custId ) throws SQLException, IOException
  {  
 	 String dbresult = "";
 	 
@@ -46,13 +63,13 @@ public class DatabaseClient
     {
     	
     	//logging values passed:
-    	 System.out.println("parameter paymentCd: "+paymentCd);
-    	 System.out.println("parameter order: "+order);
-    	 System.out.println("parameter payTime: "+payTime);
-    	 System.out.println("parameter payMehtod: "+payMehtod);
+    	 System.out.println("parameter paymentCd: " +paymentCd);
+    	 System.out.println("parameter order: "		+order);
+    	 System.out.println("parameter payTime: "	+payTime);
+    	 System.out.println("parameter payMehtod: "	+payMehtod);
     	 System.out.println("parameter servSurvey: "+servSurvey);
-    	 System.out.println("parameter totPayed: "+totPayed);
-    	 System.out.println("parameter custId: "+custId);
+    	 System.out.println("parameter totPayed: "	+totPayed);
+    	 System.out.println("parameter custId: "	+custId);
     	
  
     	stat.executeUpdate("INSERT INTO PAYMENTS (PAYMENTCODE, ORDERID, PAYMENTTIME, PAYMENTMETHOD, SERVICESURVEY, TOTALPAYED, CUSTOMERID) "
@@ -69,11 +86,88 @@ public class DatabaseClient
         	  dbresult = "ERROR IN DB";
           }
        }
+       
+      
    
     }
     return dbresult;
  }
 
+ 
+ /**
+  * Executes the Select SQL operation against the database to obtain all the payments
+  * 
+  */
+ public static String[][] executeSelectPayments(String paymentCd) throws SQLException, IOException
+ {  
+	String[][] selectLine = new String[100][7];
+	 
+    try (Connection conn = getConnectionNoFile();
+       Statement stat = conn.createStatement())
+    {
+    	
+    	if (paymentCd.isEmpty())
+    	{
+    		System.out.println("parameter paymentCd has not been sent");
+
+	    	try (ResultSet result2 = stat.executeQuery("SELECT * FROM PAYMENTS ORDER BY PAYMENTTIME DESC FETCH FIRST 10 ROW ONLY"))
+	       	 {
+	       	   ResultSetMetaData metaData = result2.getMetaData();
+	       	   int columnCount = metaData.getColumnCount();
+	       	   
+	       	   for (int i = 1; i <= columnCount; i++)
+	       	   {
+	       		 selectLine[0][i-1] = metaData.getColumnLabel(i);
+	       	   }
+	       	   System.out.println();
+	       	   
+	       	   int op = 0;
+	       	   while (result2.next())
+	       	   {       		   
+	       		   op++;
+	       		   for (int i = 1; i <= columnCount; i++)
+	           	   {
+	       			selectLine[op][i-1] = result2.getString(i);
+	           		System.out.print("\n selectLine["+op+"]["+(i-1)+"]" + selectLine[op][i-1]);
+	           	   }
+	       		   System.out.println();
+	       	   }
+          
+	       	 }	
+    	}else
+    	{
+    	 //logging values passed:    	
+    	 System.out.println("parameter paymentCd: " +paymentCd);
+  
+       
+    	 try (ResultSet result2 = stat.executeQuery("SELECT * FROM PAYMENTS where PAYMENTCODE = '"+paymentCd+"'"))
+    	 {
+    	   ResultSetMetaData metaData = result2.getMetaData();
+    	   int columnCount = metaData.getColumnCount();
+    	   
+    	   for (int i = 1; i <= columnCount; i++)
+    	   {
+    		 selectLine[0][i-1] = metaData.getColumnLabel(i);
+    	   }
+    	   System.out.println();
+    	   
+    	   while (result2.next())
+    	   {
+    		   for (int i = 1; i <= columnCount; i++)
+        	   {
+    			 selectLine[1][i-1] = result2.getString(i);
+        	   }
+    		   System.out.println();
+    	   }
+       
+       
+       }
+    }
+   
+    }
+    return selectLine;
+ }
+ 
  
  /**
   * Gets a connection from the properties specified in the code.

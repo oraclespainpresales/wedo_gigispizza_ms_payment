@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: io.helidon.examples.quickstart.se.MainTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.222 sec - in io.helidon.examples.quickstart.se.MainTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.842 sec - in io.helidon.examples.quickstart.se.MainTest
