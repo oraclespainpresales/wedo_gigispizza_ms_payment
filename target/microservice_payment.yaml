@@ -17,26 +17,21 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: microservice-order
+  name: microservice-payment
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: microservice-order
+        app: microservice-payment
         version: v1
     spec:
       containers:
-      - name: microservice-order
-        image:  fra.ocir.io/wedoinfra/wedodevops/msorder:latest
-        env:
-        - name: ORD_PORT
-          value: "8080"
-        - name: ORD_HOST
-          value: "0.0.0.0"
+      - name: microservice-payment
+        image:  fra.ocir.io/wedoinfra/wedodevops/mspayment:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 9002
       imagePullSecrets:
       - name: ocirsecret
       restartPolicy: Always
@@ -44,15 +39,15 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: microservice-order
+  name: microservice-payment
   labels:
-    app: microservice-order
+    app: microservice-payment
 spec:
   type: NodePort
   selector:
-    app: microservice-order
+    app: microservice-payment
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 9002
+    targetPort: 9002
     name: http
 ---
