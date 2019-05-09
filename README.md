@@ -1,15 +1,10 @@
 
-# Helidon Example: quickstart-se
+# Wedo_DevOps_Microservices
 
-This example implements a simple Hello World REST service.
+internal helidon microservice managing payments and accounting events in SQL pluggable db
 
 ## Prerequisites
 
-1. Maven 3.5 or newer
-2. Java SE 8 or newer
-3. Docker 17 or newer to build and run docker images
-4. Kubernetes minikube v0.24 or newer to deploy to Kubernetes (or access to a K8s 1.7.4 or newer cluster)
-5. Kubectl 1.7.4 or newer to deploy to Kubernetes
 
 Verify prerequisites
 ```
@@ -29,38 +24,31 @@ mvn package
 ## Start the application
 
 ```
-java -jar target/quickstart-se.jar
+java -jar target/microservice-payment.jar
 ```
 
 ## Exercise the application
-
+Examples:
 ```
-curl -X GET http://localhost:8080/greet
-{"message":"Hello World!"}
+curl -X POST -H "Content-Type: application/json" -d '{"paymentid":""}' http://localhost:9002/helidon/selectpayment
 
-curl -X GET http://localhost:8080/greet/Joe
-{"message":"Hello Joe!"}
-
-curl -X PUT -H "Content-Type: application/json" -d '{"greeting" : "Hola"}' http://localhost:8080/greet/greeting
-
-curl -X GET http://localhost:8080/greet/Jose
-{"message":"Hola Jose!"}
+curl -X POST -H "Content-Type: application/json" -d '{"paymentid":"1234"}' http://localhost:9002/helidon/selectpayment
 ```
 
 ## Try health and metrics
 
 ```
-curl -s -X GET http://localhost:8080/health
+curl -s -X GET http://localhost:9002/health
 {"outcome":"UP",...
 . . .
 
 # Prometheus Format
-curl -s -X GET http://localhost:8080/metrics
+curl -s -X GET http://localhost:9002/metrics
 # TYPE base:gc_g1_young_generation_count gauge
 . . .
 
 # JSON Format
-curl -H 'Accept: application/json' -X GET http://localhost:8080/metrics
+curl -H 'Accept: application/json' -X GET http://localhost:9002/metrics
 {"base":...
 . . .
 
@@ -69,13 +57,13 @@ curl -H 'Accept: application/json' -X GET http://localhost:8080/metrics
 ## Build the Docker Image
 
 ```
-docker build -t quickstart-se target
+docker build -t microservice-payment target
 ```
 
 ## Start the application with Docker
 
 ```
-docker run --rm -p 8080:8080 quickstart-se:latest
+docker run --rm -p 8080:8080 microservice-payment:latest
 ```
 
 Exercise the application as described above
@@ -86,5 +74,5 @@ Exercise the application as described above
 kubectl cluster-info                # Verify which cluster
 kubectl get pods                    # Verify connectivity to cluster
 kubectl create -f target/app.yaml   # Deply application
-kubectl get service quickstart-se  # Get service info
+kubectl get service microservice-payment  # Get service info
 ```
