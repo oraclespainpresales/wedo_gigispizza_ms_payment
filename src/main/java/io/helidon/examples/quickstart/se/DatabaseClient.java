@@ -16,10 +16,16 @@ import io.helidon.webserver.ServerResponse;
 */
 public class DatabaseClient
 {
+
+	static String javaHome; 
+	static String sqldbUrl; 
+	static String sqldbUsername; 
+	static String sqldbPassword;
+		
  public String insertPayment(String paymentCode, String orderId, String paymentTime, String paymentMehtod, String serviceSurvey, String totalPayed, String customerId ) throws IOException
  {
 	 String dbresult = "";
-	 
+		 
     try
     {
     	dbresult = executeInsertPayment(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, totalPayed, customerId );
@@ -58,18 +64,20 @@ public class DatabaseClient
  {  
 	 String dbresult = "";
 	 
-    try (Connection conn = getConnectionNoFile();
-       Statement stat = conn.createStatement())
-    {
+    //try (Connection conn = getConnectionNoFile();
+	//try (Connection conn = getConnection(); 
+	 try (Connection conn = getConnectionFromEnvVars(); 
+		 Statement stat = conn.createStatement())
+	 		{
     	
-    	//logging values passed:
-    	 System.out.println("parameter paymentCd: " +paymentCd);
-    	 System.out.println("parameter order: "		+order);
-    	 System.out.println("parameter payTime: "	+payTime);
-    	 System.out.println("parameter payMehtod: "	+payMehtod);
-    	 System.out.println("parameter servSurvey: "+servSurvey);
-    	 System.out.println("parameter totPayed: "	+totPayed);
-    	 System.out.println("parameter custId: "	+custId);
+	    	//logging values passed:
+	    	 System.out.println("parameter paymentCd: " +paymentCd);
+	    	 System.out.println("parameter order: "		+order);
+	    	 System.out.println("parameter payTime: "	+payTime);
+	    	 System.out.println("parameter payMehtod: "	+payMehtod);
+	    	 System.out.println("parameter servSurvey: "+servSurvey);
+	    	 System.out.println("parameter totPayed: "	+totPayed);
+	    	 System.out.println("parameter custId: "	+custId);
     	
  
     	stat.executeUpdate("INSERT INTO PAYMENTS (PAYMENTCODE, ORDERID, PAYMENTTIME, PAYMENTMETHOD, SERVICESURVEY, TOTALPAYED, CUSTOMERID) "
@@ -102,7 +110,9 @@ public class DatabaseClient
  {  
 	String[][] selectLine = new String[100][7];
 	 
-    try (Connection conn = getConnectionNoFile();
+    //try (Connection conn = getConnectionNoFile();
+	//try (Connection conn = getConnection(); 
+		 try (Connection conn = getConnectionFromEnvVars(); 
        Statement stat = conn.createStatement())
     {
     	
@@ -168,29 +178,13 @@ public class DatabaseClient
     return selectLine;
  }
  
- 
- /**
-  * Gets a connection from the properties specified in the code.
-  * @return the database connection
-  */
- public static Connection getConnectionNoFile() throws SQLException, IOException
- { 
- 
- 
-    String url = "jdbc:oracle:thin:@//130.61.124.136:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com";
-    String username = "microservice";
-    String password = "AAZZ__welcomedevops123";
-    
-    
 
-    return DriverManager.getConnection(url, username, password);
- }
 
  /**
   * Gets a connection from the properties specified in the file database.properties.
   * @return the database connection
   */
- /*
+ 
  public static Connection getConnection() throws SQLException, IOException
  { 
     Properties props = new Properties();
@@ -208,7 +202,53 @@ public class DatabaseClient
 
     return DriverManager.getConnection(url, username, password);
  }
-*/
 
+
+ /**
+  * Get environment variables for database connectivity
+  * @return the database connection
+  */
+ 
+ public static Connection getConnectionFromEnvVars() throws SQLException, IOException
+ { 
+	
+  Properties props = new Properties();
+    
+  try (InputStream in = Files.newInputStream(Paths.get("database.properties")))
+   {
+      props.load(in);
+   }
+  
+    String drivers = props.getProperty("jdbc.drivers");
+    if (drivers != null) System.setProperty("jdbc.drivers", drivers);
+    String url = props.getProperty("jdbc.url");
+    String username = props.getProperty("jdbc.username");
+    String password = props.getProperty("jdbc.password");
+    
+
+	javaHome = System.getenv("JAVA_HOME");
+  System.out.println("\nJAVA_HOME: " + javaHome);
+	
+  sqldbUrl = System.getenv("SQLDB_URL");
+  System.out.println("\nSQLDB_URL: "		+ sqldbUrl);
+
+	sqldbUsername = System.getenv("SQLDB_USERNAME");
+  System.out.println("\nSQLDB_USERNAME: "	+ sqldbUsername);
+
+	sqldbPassword = System.getenv("SQLDB_PASSWORD");
+  System.out.println("\nSQLDB_PASSWORD: "	+ "********");
+
+	//If env vars are null replace with value from file database.properties
+  System.out.println("\nSome env vars are null. Replacing with values from database.properties:");
+  if (sqldbUrl      == null) sqldbUrl      = url;
+  if (sqldbUsername == null) sqldbUsername = username;
+  if (sqldbPassword == null) sqldbPassword = password;
+  System.out.println("\nSQLDB_URL: " + url);
+  System.out.println("\nSQLDB_USERNAME: " + username);
+  System.out.println("\nSQLDB_PASSWORD: " + "********");
+
+	return DriverManager.getConnection(sqldbUrl, sqldbUsername, sqldbPassword);
+    
+ }
  
 }

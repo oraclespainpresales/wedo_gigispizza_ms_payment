@@ -44,6 +44,13 @@ spec:
       containers:
       - name: microservice-payment
         image: fharris/microservice-payment
+        env:
+        - name: SQLDB_URL
+          value: "jdbc:oracle:thin:@//130.61.124.136:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com"
+        - name: SQLDB_USERNAME
+          value: "microservice"
+        - name: SQLDB_PASSWORD
+          value: "AAZZ__welcomedevops123"  
         imagePullPolicy: Always
         ports:
         - containerPort: 9002

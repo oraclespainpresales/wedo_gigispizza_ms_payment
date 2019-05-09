@@ -30,6 +30,8 @@ import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
 import io.helidon.webserver.Service;
 
+
+
 /**
  * A ervice to create payments in database. Examples:
  *
@@ -214,6 +216,7 @@ public class PaymentService implements Service {
         DatabaseClient dbclient = new DatabaseClient();
     	dbresult = dbclient.insertPayment(paymentid, orderId, paymentTime, paymentMethod, serviceSurvey, totalPayed, customerId );
         //if dbresult is null or empty return a string with "SQL ERROR - Check logs"
+    	
 
     	JsonObject returnObject = JSON.createObjectBuilder()
                 .add("message", "payment creation requested")
@@ -274,8 +277,9 @@ public class PaymentService implements Service {
   	boolean resSelectLineNoMoreThanOne = (dbresult[2][0] == null || dbresult[2][0].length() == 0);
   	
   	if (resSelectLineNoMoreThanOne){
+  		
 		  
-  		System.out.println("SECOND LINE IS EMPTY");  
+  		System.out.println("\n SECOND LINE IS EMPTY \n");  
         
         JsonObject returnObject1 = Json.createObjectBuilder()
         		      .add("payment", Json.createObjectBuilder()
@@ -288,16 +292,21 @@ public class PaymentService implements Service {
         		          .add(dbresult[0][6], dbresult[1][6]))
         		      .build();
         
+        
+        
         JsonObject returnObject = JSON.createObjectBuilder()
                 .add("message", "single line select requested")
                 .add("singleline", returnObject1)
                 .build();
-        
+  
+    	System.out.print("returnObject:  \n" + returnObject);
         response.status(Http.Status.OK_200).send(returnObject);
-        
+       
+		
   	  }else{
-  		System.out.println("SECOND LINE IS NOT EMPTY");  
-        
+  		System.out.println("SECOND LINE IS NOT EMPTY"); 
+  		
+
         JsonObject returnObject1 = Json.createObjectBuilder()
         		      .add("payment", Json.createObjectBuilder()
         		          .add(dbresult[0][0], dbresult[1][0])
@@ -411,19 +420,24 @@ public class PaymentService implements Service {
         
         //if dbresult is null or empty return a string with "SQL ERROR - Check logs"
         JsonObject returnObject = JSON.createObjectBuilder()
-                .add("message", "multiline select requested")
-                .add("line1", returnObject1)
-                .add("line2", returnObject2)
-                .add("line3", returnObject3)
-                .add("line4", returnObject4)
-                .add("line5", returnObject5)
-                .add("line6", returnObject6)
-                .add("line7", returnObject7)
-                .add("line8", returnObject8)
-                .add("line9", returnObject9)
-                .add("line10", returnObject10)
-                .build();
-        
+        		.add("rows", Json.createArrayBuilder()
+        		         .add(Json.createObjectBuilder()
+        		        		   .add("line1", returnObject1)
+        		                   .add("line2", returnObject2)
+        		                   .add("line3", returnObject3)
+        		                   .add("line4", returnObject4)
+        		                   .add("line5", returnObject5)
+        		                   .add("line6", returnObject6)
+        		                   .add("line7", returnObject7)
+        		                   .add("line8", returnObject8)
+        		                   .add("line9", returnObject9)
+        		                   .add("line10", returnObject10)))
+        		.build();
+               
+        		         
+    
+       
+      	System.out.print("returnObject:  \n" + returnObject);
         response.status(Http.Status.OK_200).send(returnObject);
   	  }
       	   
