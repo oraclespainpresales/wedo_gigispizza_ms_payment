@@ -72,7 +72,7 @@ public class MainTest {
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
         OutputStream os = conn.getOutputStream();
-        os.write("{\"paymentid\" : \"123454321\" , \"paymentTime\" : \"18-JAN-2019 11:50 AM\" , \"orderId\" : \"000101\" , \"paymentMethod\" : \"VISA\" , \"serviceSurvey\" : \"4\" , \"totalPayed\" : \"22\" , \"customerId\" : \"c002\"}".getBytes());
+        os.write("{\"paymentid\" : \"FerInt051\" , \"paymentTime\" : \"18-JAN-2019 11:50 AM\" , \"orderId\" : \"000101\" , \"paymentMethod\" : \"VISA\" , \"serviceSurvey\" : \"4\" , \"totalPayed\" : \"22\" , \"customerId\" : \"c002\"}".getBytes());
         os.close();
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
         
@@ -80,7 +80,7 @@ public class MainTest {
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
         OutputStream os2 = conn.getOutputStream();
-        os2.write("{\"paymentid\" : \"1234\"}".getBytes());
+        os2.write("{\"paymentid\" : \"FerInt051\"}".getBytes());
         os2.close();
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
         

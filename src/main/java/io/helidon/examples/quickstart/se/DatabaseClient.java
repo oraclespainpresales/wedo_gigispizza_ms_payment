@@ -184,7 +184,7 @@ public class DatabaseClient
   * Gets a connection from the properties specified in the file database.properties.
   * @return the database connection
   */
- 
+ /*
  public static Connection getConnection() throws SQLException, IOException
  { 
     Properties props = new Properties();
@@ -202,7 +202,7 @@ public class DatabaseClient
 
     return DriverManager.getConnection(url, username, password);
  }
-
+*/
 
  /**
   * Get environment variables for database connectivity
@@ -211,7 +211,7 @@ public class DatabaseClient
  
  public static Connection getConnectionFromEnvVars() throws SQLException, IOException
  { 
-	
+	/*
   Properties props = new Properties();
     
   try (InputStream in = Files.newInputStream(Paths.get("database.properties")))
@@ -225,7 +225,7 @@ public class DatabaseClient
     String username = props.getProperty("jdbc.username");
     String password = props.getProperty("jdbc.password");
     
-
+*/
 	javaHome = System.getenv("JAVA_HOME");
   System.out.println("\nJAVA_HOME: " + javaHome);
 	
@@ -240,11 +240,11 @@ public class DatabaseClient
 
 	//If env vars are null replace with value from file database.properties
   System.out.println("\nSome env vars are null. Replacing with values from database.properties:");
-  if (sqldbUrl      == null) sqldbUrl      = url;
-  if (sqldbUsername == null) sqldbUsername = username;
-  if (sqldbPassword == null) sqldbPassword = password;
-  System.out.println("\nSQLDB_URL: " + url);
-  System.out.println("\nSQLDB_USERNAME: " + username);
+  if (sqldbUrl      == null) sqldbUrl      = "jdbc:oracle:thin:@//130.61.124.136:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com";
+  if (sqldbUsername == null) sqldbUsername = "microservice";
+  if (sqldbPassword == null) sqldbPassword = "AAZZ__welcomedevops123";
+  System.out.println("\nSQLDB_URL: " + sqldbUrl);
+  System.out.println("\nSQLDB_USERNAME: " + sqldbUsername);
   System.out.println("\nSQLDB_PASSWORD: " + "********");
 
 	return DriverManager.getConnection(sqldbUrl, sqldbUsername, sqldbPassword);
