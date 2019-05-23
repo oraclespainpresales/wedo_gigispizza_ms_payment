@@ -50,7 +50,7 @@ metadata:
   labels:
     app: microservice-payment
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: microservice-payment
   ports:
