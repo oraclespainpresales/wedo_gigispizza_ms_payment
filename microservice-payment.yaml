@@ -13,7 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
- 
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: microservice-payment
+  labels:
+    app: microservice-payment
+spec:
+  type: ClusterIP
+  selector:
+    app: microservice-payment
+  ports:
+  - port: 9002
+    targetPort: 9002
+    name: http
+--- 
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
@@ -42,19 +57,4 @@ spec:
       imagePullSecrets:
       - name: ocirsecret
       restartPolicy: Always
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: microservice-payment
-  labels:
-    app: microservice-payment
-spec:
-  type: ClusterIP
-  selector:
-    app: microservice-payment
-  ports:
-  - port: 9002
-    targetPort: 9002
-    name: http
 ---
