@@ -19,9 +19,14 @@ package io.helidon.examples.quickstart.se;
 import java.io.IOException;
 import java.util.Collections;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonArrayBuilder;
 
 import io.helidon.common.http.Http;
 import io.helidon.config.Config;
@@ -235,7 +240,7 @@ public class PaymentService implements Service {
     private void selectJsonDBResponse(JsonObject jo, ServerResponse response) throws IOException {
 
     	String errorParam;
-    	String[][] dbresult = {};
+    	//String[][] dbresult = {};
     	
     	errorParam = "Generic error with json object";
     	
@@ -259,273 +264,96 @@ public class PaymentService implements Service {
       
     	// Call database service
         DatabaseClient dbclient = new DatabaseClient();
-        dbresult = dbclient.selectPayments(paymentid);
-     
+		DatabaseResult dbResult = new DatabaseResult();
+
+		dbResult = dbclient.selectPayments(paymentid);
+		String[][] dbresult = dbResult.getSelectLine();
+
+		ArrayList<String> lines = dbResult.getLines();
+
+		System.out.print("\n dbResult.getLines() "+ dbResult.getLines());
+		System.out.print("\n dbResult.getLinesLength() "+ dbResult.getLinesLength());
+		System.out.print("\n dbResult.getNumColumnsListArray() "+ dbResult.getNumColumnsListArray());
+
+     //   dbresult = dbclient.selectPayments(paymentid);
+
+     //TODO to solve this bug print here object dbResult and check values
+		System.out.println("\ndbResult.getNumColumnsSelectLine() :"+dbResult.getNumColumnsSelectLine());
+		System.out.println("\ndbResult.getSelectLineLength() :"+dbResult.getSelectLineLength());
+
  	   int line = 0;
-  	   while (line <= 10)
+  	   while (line <= dbResult.getSelectLineLength())
   	   {       		   
   		  
-  		   for (int column = 0; column <= 6; column++)
+  		   for (int column = 0; column <= (dbResult.getNumColumnsSelectLine()-1); column++)
       	   {
       		System.out.print("\n dbresult["+line+"]["+(column)+"]" + dbresult[line][column]);
       	   }
   		   line++;
   	   }
-  	   
-  	
-  	//Checking how many lines dbresult has. If more than 1 then prepare to send multiple objects, if not send a single object associated with a single line    
-  	boolean resSelectLineNoMoreThanOne = (dbresult[2][0] == null || dbresult[2][0].length() == 0);
-  	
-  	if (resSelectLineNoMoreThanOne){
-  		
-		  
-  		System.out.println("\n SECOND LINE IS EMPTY \n");  
-        
-        JsonObject returnObject1 = Json.createObjectBuilder()
-        		      .add("payment", Json.createObjectBuilder()
-        		          .add(dbresult[0][0], dbresult[1][0])
-        		          .add(dbresult[0][1], dbresult[1][1])
-        		          .add(dbresult[0][2], dbresult[1][2])
-        		          .add(dbresult[0][3], dbresult[1][3])
-        		          .add(dbresult[0][4], dbresult[1][4])
-        		          .add(dbresult[0][5], dbresult[1][5])
-        		          .add(dbresult[0][6], dbresult[1][6]))
-        		      .build();
-        
-        
-        
-        JsonObject returnObject = JSON.createObjectBuilder()
-                .add("message", "single line select requested")
-                .add("singleline", returnObject1)
-                .build();
-  
-    	System.out.print("returnObject:  \n" + returnObject);
-        response.status(Http.Status.OK_200).send(returnObject);
-       
-		
-  	  }else{
-  		System.out.println("SECOND LINE IS NOT EMPTY"); 
-  		
 
-        JsonObject returnObject1 = Json.createObjectBuilder()
-        		      .add("payment", Json.createObjectBuilder()
-        		          .add(dbresult[0][0], dbresult[1][0])
-        		          .add(dbresult[0][1], dbresult[1][1])
-        		          .add(dbresult[0][2], dbresult[1][2])
-        		          .add(dbresult[0][3], dbresult[1][3])
-        		          .add(dbresult[0][4], dbresult[1][4])
-        		          .add(dbresult[0][5], dbresult[1][5])
-        		          .add(dbresult[0][6], dbresult[1][6]))
-        		      .build();
-        
-        JsonObject returnObject2 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[2][0])
-  		          .add(dbresult[0][1], dbresult[2][1])
-  		          .add(dbresult[0][2], dbresult[2][2])
-  		          .add(dbresult[0][3], dbresult[2][3])
-  		          .add(dbresult[0][4], dbresult[2][4])
-  		          .add(dbresult[0][5], dbresult[2][5])
-  		          .add(dbresult[0][6], dbresult[2][6]))
-  		      .build();
-        
-        JsonObject returnObject3 = Json.createObjectBuilder()
-    		      .add("payment", Json.createObjectBuilder()
-    		          .add(dbresult[0][0], dbresult[3][0])
-    		          .add(dbresult[0][1], dbresult[3][1])
-    		          .add(dbresult[0][2], dbresult[3][2])
-    		          .add(dbresult[0][3], dbresult[3][3])
-    		          .add(dbresult[0][4], dbresult[3][4])
-    		          .add(dbresult[0][5], dbresult[3][5])
-    		          .add(dbresult[0][6], dbresult[3][6]))
-    		      .build();
-        
-        JsonObject returnObject4 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[4][0])
-  		          .add(dbresult[0][1], dbresult[4][1])
-  		          .add(dbresult[0][2], dbresult[4][2])
-  		          .add(dbresult[0][3], dbresult[4][3])
-  		          .add(dbresult[0][4], dbresult[4][4])
-  		          .add(dbresult[0][5], dbresult[4][5])
-  		          .add(dbresult[0][6], dbresult[4][6]))
-  		      .build();
-        
-        JsonObject returnObject5 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[5][0])
-  		          .add(dbresult[0][1], dbresult[5][1])
-  		          .add(dbresult[0][2], dbresult[5][2])
-  		          .add(dbresult[0][3], dbresult[5][3])
-  		          .add(dbresult[0][4], dbresult[5][4])
-  		          .add(dbresult[0][5], dbresult[5][5])
-  		          .add(dbresult[0][6], dbresult[5][6]))
-  		      .build();
-        
-        JsonObject returnObject6 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[6][0])
-  		          .add(dbresult[0][1], dbresult[6][1])
-  		          .add(dbresult[0][2], dbresult[6][2])
-  		          .add(dbresult[0][3], dbresult[6][3])
-  		          .add(dbresult[0][4], dbresult[6][4])
-  		          .add(dbresult[0][5], dbresult[6][5])
-  		          .add(dbresult[0][6], dbresult[6][6]))
-  		      .build();
-        
-        JsonObject returnObject7 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[7][0])
-  		          .add(dbresult[0][1], dbresult[7][1])
-  		          .add(dbresult[0][2], dbresult[7][2])
-  		          .add(dbresult[0][3], dbresult[7][3])
-  		          .add(dbresult[0][4], dbresult[7][4])
-  		          .add(dbresult[0][5], dbresult[7][5])
-  		          .add(dbresult[0][6], dbresult[7][6]))
-  		      .build();
-        
-        JsonObject returnObject8 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[8][0])
-  		          .add(dbresult[0][1], dbresult[8][1])
-  		          .add(dbresult[0][2], dbresult[8][2])
-  		          .add(dbresult[0][3], dbresult[8][3])
-  		          .add(dbresult[0][4], dbresult[8][4])
-  		          .add(dbresult[0][5], dbresult[8][5])
-  		          .add(dbresult[0][6], dbresult[8][6]))
-  		      .build();
-        
-       JsonObject returnObject9 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[9][0])
-  		          .add(dbresult[0][1], dbresult[9][1])
-  		          .add(dbresult[0][2], dbresult[9][2])
-  		          .add(dbresult[0][3], dbresult[9][3])
-  		          .add(dbresult[0][4], dbresult[9][4])
-  		          .add(dbresult[0][5], dbresult[9][5])
-  		          .add(dbresult[0][6], dbresult[9][6]))
-  		      .build();
-        
-       JsonObject returnObject10 = Json.createObjectBuilder()
-  		      .add("payment", Json.createObjectBuilder()
-  		          .add(dbresult[0][0], dbresult[10][0])
-  		          .add(dbresult[0][1], dbresult[10][1])
-  		          .add(dbresult[0][2], dbresult[10][2])
-  		          .add(dbresult[0][3], dbresult[10][3])
-  		          .add(dbresult[0][4], dbresult[10][4])
-  		          .add(dbresult[0][5], dbresult[10][5])
-  		          .add(dbresult[0][6], dbresult[10][6]))
-  		      .build();
-        
-        
-        //if dbresult is null or empty return a string with "SQL ERROR - Check logs"
-        JsonObject returnObject = JSON.createObjectBuilder()
-        		.add("rows", Json.createArrayBuilder()
-        		         .add(Json.createObjectBuilder()
-        		        		   .add("line1", returnObject1)
-        		                   .add("line2", returnObject2)
-        		                   .add("line3", returnObject3)
-        		                   .add("line4", returnObject4)
-        		                   .add("line5", returnObject5)
-        		                   .add("line6", returnObject6)
-        		                   .add("line7", returnObject7)
-        		                   .add("line8", returnObject8)
-        		                   .add("line9", returnObject9)
-        		                   .add("line10", returnObject10)))
-        		.build();
-           
 
-            JsonObject value2 = Json.createObjectBuilder()
-                .add("rows", Json.createArrayBuilder()
-                    .add(Json.createObjectBuilder()
-                         .add(dbresult[0][0], dbresult[1][0])
-                         .add(dbresult[0][1], dbresult[1][1])
-                         .add(dbresult[0][2], dbresult[1][2])
-                         .add(dbresult[0][3], dbresult[1][3])
-                         .add(dbresult[0][4], dbresult[1][4])
-                        .add(dbresult[0][5], dbresult[1][5])
-                       .add(dbresult[0][6], dbresult[1][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[2][0])
-                         .add(dbresult[0][1], dbresult[2][1])
-                         .add(dbresult[0][2], dbresult[2][2])
-                         .add(dbresult[0][3], dbresult[2][3])
-                         .add(dbresult[0][4], dbresult[2][4])
-                        .add(dbresult[0][5], dbresult[2][5])
-                       .add(dbresult[0][6], dbresult[2][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[3][0])
-                         .add(dbresult[0][1], dbresult[3][1])
-                         .add(dbresult[0][2], dbresult[3][2])
-                         .add(dbresult[0][3], dbresult[3][3])
-                         .add(dbresult[0][4], dbresult[3][4])
-                        .add(dbresult[0][5], dbresult[3][5])
-                       .add(dbresult[0][6], dbresult[3][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[4][0])
-                         .add(dbresult[0][1], dbresult[4][1])
-                         .add(dbresult[0][2], dbresult[4][2])
-                         .add(dbresult[0][3], dbresult[4][3])
-                         .add(dbresult[0][4], dbresult[4][4])
-                        .add(dbresult[0][5], dbresult[4][5])
-                       .add(dbresult[0][6], dbresult[4][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[5][0])
-                         .add(dbresult[0][1], dbresult[5][1])
-                         .add(dbresult[0][2], dbresult[5][2])
-                         .add(dbresult[0][3], dbresult[5][3])
-                         .add(dbresult[0][4], dbresult[5][4])
-                        .add(dbresult[0][5], dbresult[5][5])
-                       .add(dbresult[0][6], dbresult[5][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[6][0])
-                         .add(dbresult[0][1], dbresult[6][1])
-                         .add(dbresult[0][2], dbresult[6][2])
-                         .add(dbresult[0][3], dbresult[6][3])
-                         .add(dbresult[0][4], dbresult[6][4])
-                        .add(dbresult[0][5], dbresult[6][5])
-                       .add(dbresult[0][6], dbresult[6][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[7][0])
-                         .add(dbresult[0][1], dbresult[7][1])
-                         .add(dbresult[0][2], dbresult[7][2])
-                         .add(dbresult[0][3], dbresult[7][3])
-                         .add(dbresult[0][4], dbresult[7][4])
-                        .add(dbresult[0][5], dbresult[7][5])
-                       .add(dbresult[0][6], dbresult[7][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[8][0])
-                         .add(dbresult[0][1], dbresult[8][1])
-                         .add(dbresult[0][2], dbresult[8][2])
-                         .add(dbresult[0][3], dbresult[8][3])
-                         .add(dbresult[0][4], dbresult[8][4])
-                        .add(dbresult[0][5], dbresult[8][5])
-                       .add(dbresult[0][6], dbresult[8][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[9][0])
-                         .add(dbresult[0][1], dbresult[9][1])
-                         .add(dbresult[0][2], dbresult[9][2])
-                         .add(dbresult[0][3], dbresult[9][3])
-                         .add(dbresult[0][4], dbresult[9][4])
-                        .add(dbresult[0][5], dbresult[9][5])
-                       .add(dbresult[0][6], dbresult[9][6]))
-                    .add(Json.createObjectBuilder()
-                        .add(dbresult[0][0], dbresult[10][0])
-                         .add(dbresult[0][1], dbresult[10][1])
-                         .add(dbresult[0][2], dbresult[10][2])
-                         .add(dbresult[0][3], dbresult[10][3])
-                         .add(dbresult[0][4], dbresult[10][4])
-                        .add(dbresult[0][5], dbresult[10][5])
-                       .add(dbresult[0][6], dbresult[10][6]))                   )         
-                .build();    
-        		         
-    
-       
-      	System.out.print("returnObject:  \n" + value2);
-        response.status(Http.Status.OK_200).send(value2);
+		// Group keys
+		String JSON_KEY_MEMBERS_LIST = "rows";
+
+		JsonObjectBuilder[] groupArray = new JsonObjectBuilder[dbResult.getSelectLineLength()];
+
+
+
+		System.out.println("groupArray length :"+ groupArray.length); //10
+		System.out.println("dbresult length :"+ dbresult.length); //100
+
+
+		//TODO use dynamic arrays with lists and ArrayList
+
+		for (int i = 0; i < groupArray.length; i++){
+			//this code is to initialize all available space within array
+			groupArray[i] = Json.createObjectBuilder();
+		}
+
+		for (int j = 0; j < dbResult.getSelectLineLength()/*dbresult.length*/; j++) {
+			//5 below is the number of columns or attributes
+			//System.out.println("Dentro do dbresult valor de J :"+j);
+			for (int i = 0; i < dbResult.getNumColumnsSelectLine(); i++) {
+				//System.out.println("Dentro do dbresult valor de I :"+i);
+				if ((j+1) < dbresult.length) {
+					if ((!(dbresult[j + 1][i] == null || dbresult[j + 1][i].length() == 0))) {
+				//		System.out.println("dbresult nao é null :" + dbresult[j + 1][i]);
+						groupArray[j].add(dbresult[0][i], dbresult[j + 1][i]);
+					}
+				}
+
+
+			}
+		}
+
+		System.out.println("groupArray length 2nd:"+ groupArray.length);
+
+
+
+		JsonArrayBuilder membersArray = Json.createArrayBuilder();
+
+		for (int j = 0; j < groupArray.length; j++) {
+			if(!(groupArray[j] == null)){
+				System.out.println("groupArrayFinal["+j+"] nao é null :"+groupArray[j]);
+				membersArray.add(groupArray[j]);
+			}
+
+		}
+
+
+		JsonObjectBuilder groupFinal = Json.createObjectBuilder();
+
+		groupFinal.add(JSON_KEY_MEMBERS_LIST, membersArray.build());
+
+
+		System.out.print("\n");
+
+
+		response.status(Http.Status.OK_200).send(groupFinal.build().toString());
   	  }
       	   
-    }
+
 
 
 }

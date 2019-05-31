@@ -5,6 +5,8 @@ import java.sql.*;
 import java.io.*;
 import java.util.*;
 
+import java.util.ArrayList;
+
 import io.helidon.webserver.ServerResponse;
 
 
@@ -39,21 +41,26 @@ public class DatabaseClient
     return dbresult;
  }
  
- public String[][] selectPayments(String paymentCode) throws IOException
+ //public String[][] selectPayments(String paymentCode) throws IOException
+	public DatabaseResult selectPayments(String paymentCode) throws IOException
  {
 	 String[][] dbresult = {};
-	 
+	 DatabaseResult dBresult = new DatabaseResult();
+
     try
     {
-    	dbresult = executeSelectPayments(paymentCode);
+      dBresult = executeSelectPayments(paymentCode);
+      //dbresult = dBresult.getSelectLine();
     }
     catch (SQLException ex)
     {
        for (Throwable t : ex)
           t.printStackTrace();
     }
-    
-    return dbresult;
+
+
+    //return dbresult;
+	 return  dBresult;
  }
 
  /**
@@ -101,81 +108,74 @@ public class DatabaseClient
     return dbresult;
  }
 
- 
+
  /**
   * Executes the Select SQL operation against the database to obtain all the payments
   * 
   */
- public static String[][] executeSelectPayments(String paymentCd) throws SQLException, IOException
- {  
-	String[][] selectLine = new String[100][7];
-	 
-    //try (Connection conn = getConnectionNoFile();
-	//try (Connection conn = getConnection(); 
-		 try (Connection conn = getConnectionFromEnvVars(); 
-       Statement stat = conn.createStatement())
-    {
-    	
-    	if (paymentCd.isEmpty())
-    	{
-    		System.out.println("parameter paymentCd has not been sent");
+ public DatabaseResult executeSelectPayments(String paymentCd) throws SQLException, IOException
+ {
+ 	//TODO use ArrayList lines instead of String[][] selectLine to optimize storage
+ 	//only used to initialize with some values. 1000 columns and 50000 lines should be enough
+ 	int maxNumberOfColumnsTable = 1000;
+ 	int maxNumberOfLinesTable = 50000;
 
-	    	try (ResultSet result2 = stat.executeQuery("SELECT * FROM PAYMENTS ORDER BY PAYMENTTIME DESC FETCH FIRST 10 ROW ONLY"))
-	       	 {
+	String[][] selectLine = new String[maxNumberOfLinesTable][maxNumberOfColumnsTable];
+	ArrayList<String> lines = new ArrayList<String>();
+	int selectLineColumnCount = 0;
+	int selectLinesCount = 0;
+	int numColumnsListArray = 0;
+	String query = "";
+
+	 try (Connection conn = getConnectionFromEnvVars();
+       Statement stat = conn.createStatement())
+	 {
+	   	if (paymentCd.isEmpty()) {
+			query = "SELECT * FROM PAYMENTS ORDER BY PAYMENTTIME DESC";
+			System.out.println("parameter paymentCd has not been sent");
+		}else{
+			query =  "SELECT * FROM PAYMENTS where PAYMENTCODE = '"+paymentCd+"'";
+			System.out.println("parameter paymentCd: " +paymentCd);
+		}
+
+		try (ResultSet result2 = stat.executeQuery(query))
+      	 {
 	       	   ResultSetMetaData metaData = result2.getMetaData();
-	       	   int columnCount = metaData.getColumnCount();
+	       	   selectLineColumnCount = metaData.getColumnCount();
+	       	   numColumnsListArray = selectLineColumnCount;
 	       	   
-	       	   for (int i = 1; i <= columnCount; i++)
+	       	   for (int i = 1; i <= selectLineColumnCount; i++)
 	       	   {
 	       		 selectLine[0][i-1] = metaData.getColumnLabel(i);
+	       		 lines.add(metaData.getColumnLabel(i));
 	       	   }
 	       	   System.out.println();
 	       	   
-	       	   int op = 0;
+	       	   selectLinesCount = 0;
 	       	   while (result2.next())
 	       	   {       		   
-	       		   op++;
-	       		   for (int i = 1; i <= columnCount; i++)
+	       		   selectLinesCount++; //selectLinesCount will count the real number of lines to send, to avoid sending the MaxLimit right now defined as 50K
+	       		   for (int i = 1; i <= selectLineColumnCount; i++)
 	           	   {
-	       			selectLine[op][i-1] = result2.getString(i);
-	           		System.out.print("\n selectLine["+op+"]["+(i-1)+"]" + selectLine[op][i-1]);
+	       			selectLine[selectLinesCount][i-1] = result2.getString(i);
+	       			lines.add(result2.getString(i));
+	           		System.out.print("\n selectLine["+selectLinesCount+"]["+(i-1)+"]" + selectLine[selectLinesCount][i-1]);
 	           	   }
+
 	       		   System.out.println();
 	       	   }
-          
+				 System.out.print("lines :"+lines);
+				 System.out.print("\nlines length :"+ lines.size());
+
 	       	 }	
-    	}else
-    	{
-    	 //logging values passed:    	
-    	 System.out.println("parameter paymentCd: " +paymentCd);
-  
-       
-    	 try (ResultSet result2 = stat.executeQuery("SELECT * FROM PAYMENTS where PAYMENTCODE = '"+paymentCd+"'"))
-    	 {
-    	   ResultSetMetaData metaData = result2.getMetaData();
-    	   int columnCount = metaData.getColumnCount();
-    	   
-    	   for (int i = 1; i <= columnCount; i++)
-    	   {
-    		 selectLine[0][i-1] = metaData.getColumnLabel(i);
-    	   }
-    	   System.out.println();
-    	   
-    	   while (result2.next())
-    	   {
-    		   for (int i = 1; i <= columnCount; i++)
-        	   {
-    			 selectLine[1][i-1] = result2.getString(i);
-        	   }
-    		   System.out.println();
-    	   }
-       
-       
-       }
-    }
+
    
     }
-    return selectLine;
+
+	 DatabaseResult dbResultObject = new DatabaseResult(lines, selectLine, selectLineColumnCount, numColumnsListArray, lines.size() ,selectLinesCount);
+
+    return dbResultObject;
+
  }
  
 
