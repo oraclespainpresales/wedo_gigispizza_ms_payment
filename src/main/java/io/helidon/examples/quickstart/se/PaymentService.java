@@ -135,33 +135,19 @@ public class PaymentService implements Service {
 
 		if (!jo.containsKey("paymentid")) {
 			errorParam = "No paymentid provided";
-		}
-
-		if (!jo.containsKey("paymentTime")) {
+		} else if (!jo.containsKey("paymentTime")) {
 			errorParam = "No paymentTime provided";
-		}
-
-		if (!jo.containsKey("orderId")) {
+		} else if (!jo.containsKey("orderId")) {
 			errorParam = "No orderId provided";
-		}
-
-		if (!jo.containsKey("paymentMethod")) {
+		} else if (!jo.containsKey("paymentMethod")) {
 			errorParam = "No paymentMethod provided";
-		}
-
-		if (!jo.containsKey("serviceSurvey")) {
+		} else if (!jo.containsKey("serviceSurvey")) {
 			errorParam = "No serviceSurvey provided";
-		}
-
-		if (!jo.containsKey("originalPrice")) {
+		} else if (!jo.containsKey("originalPrice")) {
 			errorParam = "No originalPrice provided";
-		}
-
-		if (!jo.containsKey("totalPaid")) {
+		} else if (!jo.containsKey("totalPaid")) {
 			errorParam = "No totalPaid provided";
-		}
-
-		if (!jo.containsKey("customerId")) {
+		} else if (!jo.containsKey("customerId")) {
 			errorParam = "No customerId provided";
 		}
 
