@@ -21,14 +21,9 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import java.net.HttpURLConnection;
-
 import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
-
 import io.helidon.webserver.WebServer;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
