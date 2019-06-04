@@ -15,7 +15,7 @@
 #
 
 app:
-  greeting: "Hello"
+  greeting: "Hello Wedoers"
 
 server:
   port: 9002

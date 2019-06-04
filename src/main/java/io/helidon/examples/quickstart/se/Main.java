@@ -55,37 +55,29 @@ public final class Main {
      * @throws IOException if there are problems reading logging properties
      */
     static WebServer startServer() throws IOException {
-
         // load logging configuration
-        LogManager.getLogManager().readConfiguration(
-                Main.class.getResourceAsStream("/logging.properties"));
+        LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream("/logging.properties"));
 
         // By default this will pick up application.yaml from the classpath
         Config config = Config.create();
 
         // Get webserver config from the "server" section of application.yaml
-        ServerConfiguration serverConfig =
-                ServerConfiguration.create(config.get("server"));
-
+        ServerConfiguration serverConfig = ServerConfiguration.create(config.get("server"));
         WebServer server = WebServer.create(serverConfig, createRouting(config));
 
         // Try to start the server. If successful, print some info and arrange to
         // print a message at shutdown. If unsuccessful, print the exception.
         server.start()
-            .thenAccept(ws -> {
-                System.out.println(
-                        "WEB server is up! http://localhost:" + ws.port() + "/helidon");
-                ws.whenShutdown().thenRun(()
-                    -> System.out.println("WEB server is DOWN. Good bye!"));
-                })
-            .exceptionally(t -> {
-                System.err.println("Startup failed: " + t.getMessage());
-                t.printStackTrace(System.err);
-                return null;
-            });
+                .thenAccept(ws -> {
+                    System.out.println("WEB server is up! http://localhost:" + ws.port() + "/helidon");
+                    ws.whenShutdown().thenRun(()-> System.out.println("WEB server is DOWN. Good bye!"));
+                }).exceptionally(t -> {
+            System.err.println("Startup failed: " + t.getMessage());
+            t.printStackTrace(System.err);
+            return null;
+        });
 
         // Server threads are not daemon. No need to block. Just react.
-
         return server;
     }
 
@@ -96,7 +88,6 @@ public final class Main {
      * @param config configuration of this server
      */
     private static Routing createRouting(Config config) {
-
         MetricsSupport metrics = MetricsSupport.create();
         PaymentService paymentService = new PaymentService(config);
         HealthSupport health = HealthSupport.builder()
@@ -107,8 +98,7 @@ public final class Main {
                 .register(JsonSupport.create())
                 .register(health)                   // Health at "/health"
                 .register(metrics)                  // Metrics at "/metrics"
-               .register("/helidon", paymentService)
+                .register("/helidon", paymentService)
                 .build();
     }
-
 }

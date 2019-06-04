@@ -66,13 +66,22 @@ public class MainTest {
     @Test
     public void testHelloWorld() throws Exception {
         HttpURLConnection conn;
-        
-        
         conn = getURLConnection("POST", "/helidon/payment");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
         OutputStream os = conn.getOutputStream();
-        os.write("{\"paymentid\" : \"FerInt051\" , \"paymentTime\" : \"18-JAN-2019 11:50 AM\" , \"orderId\" : \"000101\" , \"paymentMethod\" : \"VISA\" , \"serviceSurvey\" : \"4\" , \"totalPayed\" : \"22\" , \"customerId\" : \"c002\"}".getBytes());
+        //os.write("{\"paymentid\" : \"FerInt051\" , \"paymentTime\" : \"18-JAN-2019 11:50 AM\" , \"orderId\" : \"000101\" , \"paymentMethod\" : \"VISA\" , \"serviceSurvey\" : \"4\" , \"totalPayed\" : \"22\" , \"customerId\" : \"c002\"}".getBytes());
+        String objectPyament = "{\"paymentid\" : \"FerInt051\" , " +
+                                "\"paymentTime\" : \"2019-05-22T08:08:43.270Z\" , " +
+                                "\"orderId\" : \"20190604114154\" , " +
+                                "\"paymentMethod\" : \"VISA\" , " +
+                                "\"serviceSurvey\" : \"4\" , " +
+                                "\"originalPrice\" : \"22\" , " +
+                                "\"totalPaid\" : \"22\" , " +
+                                "\"customerId\" : \"c002\"}";
+        System.out.println("object : " + objectPyament);
+        os.write(objectPyament.getBytes());
+        os.flush();
         os.close();
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
         
