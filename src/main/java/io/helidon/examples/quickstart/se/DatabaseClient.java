@@ -21,12 +21,12 @@ public class DatabaseClient {
 
 
 	public String insertPayment(String paymentCode, String orderId, String paymentTime, String paymentMehtod,
-								String serviceSurvey, String originalPrice, String totalPayed, String customerId) throws IOException {
+								String serviceSurvey, String originalPrice, String totalPied, String customerId) throws IOException {
 
 		String dbresult = "";
 
 		try {
-			dbresult = executeInsertPayment(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, originalPrice, totalPayed, customerId);
+			dbresult = executeInsertPayment(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, originalPrice, totalPied, customerId);
 		} catch (SQLException ex) {
 			for (Throwable t : ex)
 				t.printStackTrace();
@@ -57,7 +57,7 @@ public class DatabaseClient {
 	 *
 	 */
 	public static String executeInsertPayment(String paymentCd, String order, String payTime, String payMehtod,
-											  String servSurvey, String oriPrice, String totPayed, String custId) throws SQLException, IOException {
+											  String servSurvey, String oriPrice, String totPaid, String custId) throws SQLException, IOException {
 
 		String dbresult = "";
 		// try (Connection conn = getConnectionNoFile();
@@ -70,7 +70,7 @@ public class DatabaseClient {
 			System.out.println("parameter payMehtod: "  + payMehtod);
 			System.out.println("parameter servSurvey: " + servSurvey);
 			System.out.println("parameter oriPrice: "   + oriPrice);
-			System.out.println("parameter totPayed: "   + totPayed);
+			System.out.println("parameter totPaid: "    + totPaid);
 			System.out.println("parameter custId: "     + custId);
 
 			stat.executeUpdate("INSERT INTO PAYMENTS (PAYMENTCODE,ORDERID,PAYMENTTIME,PAYMENTMETHOD,SERVICESURVEY,ORIGINALPRICE,TOTALPAID,CUSTOMERID)"
@@ -80,7 +80,7 @@ public class DatabaseClient {
 					+ payMehtod + "', '"
 					+ servSurvey + "', '"
 					+ oriPrice + "', '"
-					+ totPayed + "', '"
+					+ totPaid + "', '"
 					+ custId +
 					"')");
 
