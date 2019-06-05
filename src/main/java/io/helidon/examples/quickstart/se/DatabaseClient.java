@@ -80,7 +80,7 @@ public class DatabaseClient {
 	 * Executes the insert SQL operation against the database
 	 *
 	 */
-	public static String executeInsertPayment(String paymentCd, String order, String payTime, String payMehtod,
+	private String executeInsertPayment(String paymentCd, String order, String payTime, String payMehtod,
 											  String servSurvey, String oriPrice, String totPaid, String custId) throws SQLException, IOException {
 
 		String dbresult = "";
@@ -127,7 +127,7 @@ public class DatabaseClient {
 	 * payments
 	 *
 	 */
-	public DatabaseResult executeSelectPayments(String paymentCd) throws SQLException, IOException {
+	private DatabaseResult executeSelectPayments(String paymentCd) throws SQLException, IOException {
 		/**
 		 TODO use ArrayList lines instead of String[][] selectLine to optimize storage
 		 only used to initialize with some values. 1000 columns and 50000 lines should
