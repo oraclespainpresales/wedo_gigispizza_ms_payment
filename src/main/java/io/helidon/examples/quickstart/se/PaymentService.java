@@ -125,12 +125,13 @@ public class PaymentService implements Service {
 		});
 	}
 
+
 	/**
 	 * Set the validaton of json object param check, database call and response.
 	 * @param response the server response
 	 */
 	private void updateJsonDBResponse(JsonObject jo, ServerResponse response) throws IOException {
-		String dbresult;
+		String dbResult;
 		String errorParam = "";
 
 		if (!jo.containsKey("paymentid")) {
@@ -159,27 +160,37 @@ public class PaymentService implements Service {
 					.send(jsonErrorObject);
 		}
 		else {
-			// Get parameters from json object
-			String paymentid = jo.getString("paymentid");
-			String tempPaymentTime = jo.getString("paymentTime");
-			String paymentTime = "TO_TIMESTAMP('" + tempPaymentTime + "', 'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"')";
-			String orderId = jo.getString("orderId");
-			String paymentMethod = jo.getString("paymentMethod");
-			String serviceSurvey = jo.getString("serviceSurvey");
-			String originalPrice = jo.getString("originalPrice");
-			String totalPaid = jo.getString("totalPaid");
-			String customerId = jo.getString("customerId");
+			try {
+				DatabaseClient dbClient = new DatabaseClient();
 
-			// Call database
-			DatabaseClient dbclient = new DatabaseClient();
-			dbresult = dbclient.insertPayment(paymentid, orderId, paymentTime, paymentMethod, serviceSurvey, originalPrice, totalPaid, customerId);
-			//if dbresult is null or empty return a string with "SQL ERROR - Check logs"
+				// Get parameters from json object
+				String paymentCd = dbClient.getPaymentCodeFromSequence();
+				String tempPaymentTime = jo.getString("paymentTime");
+				String paymentTime = "TO_TIMESTAMP('" + tempPaymentTime + "', 'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"')";
+				String orderId = jo.getString("orderId");
+				String paymentMethod = jo.getString("paymentMethod");
+				String serviceSurvey = jo.getString("serviceSurvey");
+				String originalPrice = jo.getString("originalPrice");
+				String totalPaid = jo.getString("totalPaid");
+				String customerId = jo.getString("customerId");
 
-			JsonObject returnObject = JSON.createObjectBuilder()
-					.add("message", "payment creation requested")
-					.add("dbresult", dbresult)
-					.build();
-			response.status(Http.Status.OK_200).send(returnObject);
+				// Call database
+
+				dbResult = dbClient.insertPayment(paymentCd, orderId, paymentTime, paymentMethod, serviceSurvey, originalPrice, totalPaid, customerId);
+				//if dbresult is null or empty return a string with "SQL ERROR - Check logs"
+
+				JsonObject returnObject = JSON.createObjectBuilder()
+						.add("message", "payment creation requested")
+						.add("dbresult", dbResult)
+						.build();
+				response.status(Http.Status.OK_200).send(returnObject);
+			}
+			catch (Exception ex) {
+				System.out.println("ERROR getPaymentCode: " + ex.getMessage());
+				System.out.println("StackTrace : " + ex.getStackTrace().toString());
+				response.status(Http.Status.INTERNAL_SERVER_ERROR_500).send("{'error':' + ex.getMessage()) + '}");
+			}
+
 		}
 	}
 

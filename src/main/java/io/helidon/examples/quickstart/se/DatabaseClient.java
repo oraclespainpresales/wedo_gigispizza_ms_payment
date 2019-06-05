@@ -18,7 +18,31 @@ import java.util.ArrayList;
  */
 public class DatabaseClient {
 
-
+	public String getPaymentCodeFromSequence () throws SQLException,IOException {
+		String query = "SELECT PAYMENT_SEQ.nextval FROM DUAL";
+		long paymentCode;
+		String paymentCd = "";
+		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
+			try (ResultSet result = stat.executeQuery(query)) {
+				while (result.next()){
+					if ((paymentCode = result.getLong(1)) > 0 ){
+						paymentCd += paymentCode;
+					}
+					else
+						throw new Exception ("Payment Code Error: " + paymentCode);
+				}
+			}
+			catch (Exception exRs){
+				System.out.println("ERROR DatabaseClient getPaymentCode ResultSet-> " + exRs.getMessage());
+				System.out.println("StackTrace: " + exRs.getStackTrace().toString());
+			}
+		}
+		catch(Error error){
+			System.out.println("ERROR DatabaseClient getPaymentCode -> " + error.getMessage());
+			System.out.println("StackTrace: " + error.getStackTrace().toString());
+		}
+		return paymentCd;
+	}
 
 	public String insertPayment(String paymentCode, String orderId, String paymentTime, String paymentMehtod,
 								String serviceSurvey, String originalPrice, String totalPied, String customerId) throws IOException {
