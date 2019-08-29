@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
       - name: microservice-payment
-        image:  fra.ocir.io/wedoinfra/wedodevops/mspayment:latest
+        image:  fra.ocir.io/wedoinfra/wedodevops/madrid/mspayment:latest
         env:
         - name: SQLDB_URL
           value: "jdbc:oracle:thin:@//cdb.madrid-gigispizza.wedoteam.io:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com"
