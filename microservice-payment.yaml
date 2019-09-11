@@ -50,9 +50,15 @@ spec:
         - name: SQLDB_URL
           value: "jdbc:oracle:thin:@//cdb.madrid-gigispizza.wedoteam.io:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com"
         - name: SQLDB_USERNAME
-          value: "microservice"
+          valueFrom:
+            secretKeyRef:
+              name: cdbsecret
+              key: username 
         - name: SQLDB_PASSWORD
-          value: "AAZZ__welcomedevops123"
+          valueFrom:
+            secretKeyRef:
+              name: cdbsecret
+              key: password
         imagePullPolicy: Always
         ports:
         - containerPort: 9002
