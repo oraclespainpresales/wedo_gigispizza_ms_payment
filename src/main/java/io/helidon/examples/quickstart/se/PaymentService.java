@@ -188,7 +188,10 @@ public class PaymentService implements Service {
 			catch (Exception ex) {
 				System.out.println("ERROR getPaymentCode: " + ex.getMessage());
 				System.out.println("StackTrace : " + ex.getStackTrace().toString());
-				response.status(Http.Status.INTERNAL_SERVER_ERROR_500).send("{'error':' + ex.getMessage()) + '}");
+				JsonObject errorObject = JSON.createObjectBuilder()
+									.add("error",ex.getMessage())
+									.build();
+				response.status(Http.Status.INTERNAL_SERVER_ERROR_500).send(errorObject);
 			}
 
 		}
