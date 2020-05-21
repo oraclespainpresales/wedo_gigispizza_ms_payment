@@ -52,6 +52,13 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
+                    <configuration>
+                        <environmentVariables>
+                                <SQLDB_URL>jdbc:oracle:thin:@//cdb.madrid-gigispizza.wedoteam.io:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com</SQLDB_URL>
+                                <SQLDB_USERNAME>microservice</SQLDB_USERNAME>
+                                <SQLDB_PASSWORD>AAZZ__welcomedevops123</SQLDB_PASSWORD>
+                        </environmentVariables>
+                    </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>org.junit.platform</groupId>
@@ -105,7 +112,7 @@
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <includeScope>runtime</includeScope>
-                            <excludeScope>test</excludeScope>
+                            <excludeScope>test</excludeScope>                            
                         </configuration>
                     </execution>
                 </executions>

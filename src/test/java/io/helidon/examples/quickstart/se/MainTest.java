@@ -17,12 +17,13 @@
 package io.helidon.examples.quickstart.se;
 
 import java.io.OutputStream;
-import java.util.Collections;
+import java.util.Map;
+//import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import java.net.HttpURLConnection;
-import javax.json.Json;
-import javax.json.JsonReaderFactory;
+//import javax.json.Json;
+//import javax.json.JsonReaderFactory;
 import io.helidon.webserver.WebServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
@@ -32,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
 
     private static WebServer webServer;
-    private static final JsonReaderFactory JSON = Json.createReaderFactory(Collections.emptyMap());
+    //private static final JsonReaderFactory JSON = Json.createReaderFactory(Collections.emptyMap());
 
     @BeforeAll
     public static void startTheServer() throws Exception {
@@ -110,6 +111,7 @@ public class MainTest {
         conn.setRequestMethod(method);
         conn.setRequestProperty("Accept", "application/json");
         System.out.println("Connecting: " + method + " " + url);
+        
         return conn;
     }
 }
