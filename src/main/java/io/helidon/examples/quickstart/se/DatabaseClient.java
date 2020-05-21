@@ -4,8 +4,10 @@ package io.helidon.examples.quickstart.se;
 import java.sql.*;
 import java.io.*;
 //import java.util.*;
-
-import java.util.ArrayList;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.Json;
 
 //import io.helidon.webserver.ServerResponse;
 
@@ -13,7 +15,7 @@ import java.util.ArrayList;
  * Executes SQL statements calls against a jdbc DB.
  *
  * @version 1.00 2019-03-26
- * @author Fernando Harris
+ * @author Fernando Harris and modified by Iván Sampedro
  *
  */
 public class DatabaseClient {
@@ -73,12 +75,12 @@ public class DatabaseClient {
 	}
 
 	// public String[][] selectPayments(String paymentCode) throws IOException
-	public DatabaseResult selectPayments(String paymentCode) throws IOException {
+	public JsonObject selectPayments(String paymentCode, int maxNumRows) throws IOException {
 		//String[][] dbresult = {};
-		DatabaseResult dBresult = new DatabaseResult();
+		JsonObject dBresult = null;
 
 		try {
-			dBresult = executeSelectPayments(paymentCode);
+			dBresult = executeSelectPayments(paymentCode,maxNumRows);
 			// dbresult = dBresult.getSelectLine();
 		} catch (SQLException ex) {
 			for (Throwable t : ex)
@@ -115,7 +117,7 @@ public class DatabaseClient {
 											  .append("ORIGINALPRICE").append(",")
 											  .append("TOTALPAID").append(",")
 											  .append("CUSTOMERID").append(")")
-											  .append(" VALUES (?,?,?,?,?,?,?,?)");
+											  .append(" VALUES (?,?,TO_TIMESTAMP(?,'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"'),?,?,?,?,?)");
 
 			// logging values passed:
 			System.out.println(insertSQL.toString());
@@ -134,9 +136,9 @@ public class DatabaseClient {
 			pstat.setString(2,order);
 			pstat.setString(3,payTime);
 			pstat.setString(4,payMehtod);
-			pstat.setString(5,servSurvey);
-			pstat.setString(6,oriPrice);
-			pstat.setString(7,totPaid);
+			pstat.setInt   (5,Integer.parseInt(servSurvey));
+			pstat.setFloat (6,Float.parseFloat(oriPrice));
+			pstat.setFloat (7,Float.parseFloat(totPaid));
 			pstat.setString(8,custId);
 
 			if (pstat.executeUpdate() > 0){
@@ -159,70 +161,40 @@ public class DatabaseClient {
 	}
 
 	/**
-	 * Executes the Select SQL operation against the database to obtain all the
-	 * payments
+	 * Executes the Select SQL operation against the database to obtain maxnumrows payments
+	 * the payment code passed as parameter
 	 *
 	 */
-	private DatabaseResult executeSelectPayments(String paymentCd) throws SQLException, IOException {
-		/**
-		 TODO use ArrayList lines instead of String[][] selectLine to optimize storage
-		 only used to initialize with some values. 100 columns and 500 lines should
-		 be enough
-		 */
-		int maxNumberOfColumnsTable = 100;
-		int maxNumberOfLinesTable   = 500;
-
-		String[][] selectLine     = new String[maxNumberOfLinesTable][maxNumberOfColumnsTable];
-		ArrayList<String> lines   = new ArrayList<String>();
-		int selectLineColumnCount;
-		int selectLinesCount;
-		int numColumnsListArray;
+	private JsonObject executeSelectPayments(String paymentCd, int maxNumRows) throws SQLException, IOException {
+		//Return a JsonArray with db maxnumrows data from db or the selected payment code.
 		String query;
+		int numColumns;
+		JsonArrayBuilder jRowsBuilder = Json.createArrayBuilder();
 
 		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
 			if (paymentCd.isEmpty()) {
-				query = "SELECT * FROM PAYMENTS WHERE rownum <= 50 ORDER BY PAYMENTTIME DESC";
+				query = "SELECT * FROM PAYMENTS WHERE rownum <= " + maxNumRows + " ORDER BY PAYMENTTIME DESC";
 				System.out.println("parameter paymentCd has not been sent : " + query);
 			} else {
 				query = "SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'";
 				System.out.println("parameter paymentCd: " + paymentCd + " : " + query);
 			}
 
-			try (ResultSet result2 = stat.executeQuery(query)) {
-				ResultSetMetaData metaData = result2.getMetaData();
-				selectLineColumnCount      = metaData.getColumnCount();
-				numColumnsListArray        = selectLineColumnCount;
+			try (ResultSet rset = stat.executeQuery(query)) {
+				ResultSetMetaData metaData = rset.getMetaData();
+				numColumns 				   = metaData.getColumnCount();
+			
 
-				for (int i = 1; i <= selectLineColumnCount; i++) {
-					selectLine[0][i - 1] = metaData.getColumnLabel(i);
-					lines.add(metaData.getColumnLabel(i));
-				}
-				System.out.println();
-
-				selectLinesCount = 0;
-				while (result2.next()) {
-					selectLinesCount++; // selectLinesCount will count the real number of lines to send, to avoid
-					// sending the MaxLimit right now defined as 50K
-					for (int i = 1; i <= selectLineColumnCount; i++) {
-						selectLine[selectLinesCount][i - 1] = result2.getString(i);
-						lines.add(result2.getString(i));
-						System.out.print("\n selectLine[" + selectLinesCount + "][" + (i - 1) + "]"
-								+ selectLine[selectLinesCount][i - 1]);
+				while(rset.next()){
+					JsonObjectBuilder jColumnBuilder = Json.createObjectBuilder();
+					for (int i=1;i <= numColumns;i++){
+						jColumnBuilder.add(metaData.getColumnLabel(i), rset.getString(i));
 					}
-
-					System.out.println();
+					jRowsBuilder.add(jColumnBuilder);
 				}
-				System.out.print("lines :" + lines);
-				System.out.print("\nlines length :" + lines.size());
 			}
 		}
-		
-		return new DatabaseResult(lines, 
-								  selectLine, 
-								  selectLineColumnCount, 
-								  numColumnsListArray, 
-								  lines.size(),
-								  selectLinesCount);
+		return Json.createObjectBuilder().add("rows",jRowsBuilder).build();
 	}
 
 	/**

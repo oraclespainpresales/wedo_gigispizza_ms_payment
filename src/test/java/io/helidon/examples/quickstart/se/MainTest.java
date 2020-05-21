@@ -17,7 +17,6 @@
 package io.helidon.examples.quickstart.se;
 
 import java.io.OutputStream;
-import java.util.Map;
 //import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
