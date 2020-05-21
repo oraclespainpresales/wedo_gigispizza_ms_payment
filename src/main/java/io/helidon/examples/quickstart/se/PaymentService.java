@@ -17,8 +17,6 @@
 package io.helidon.examples.quickstart.se;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collections;
 
 //import java.util.List;

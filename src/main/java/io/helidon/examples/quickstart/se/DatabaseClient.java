@@ -105,38 +105,55 @@ public class DatabaseClient {
 		String dbresult = "";
 		// try (Connection conn = getConnectionNoFile();
 		// try (Connection conn = getConnection();
-		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
+		try (Connection conn = getConnectionFromEnvVars();Statement stat = conn.createStatement()) {
+			StringBuffer insertSQL = new StringBuffer("INSERT INTO PAYMENTS (")
+											  .append("PAYMENTCODE").append(",")
+											  .append("ORDERID").append(",")
+											  .append("PAYMENTTIME").append(",")
+											  .append("PAYMENTMETHOD").append(",")
+											  .append("SERVICESURVEY").append(",")
+											  .append("ORIGINALPRICE").append(",")
+											  .append("TOTALPAID").append(",")
+											  .append("CUSTOMERID").append(")")
+											  .append(" VALUES (?,?,?,?,?,?,?,?)");
+
 			// logging values passed:
-			System.out.println("parameter paymentCd: "  + paymentCd);
-			System.out.println("parameter order: "      + order);
-			System.out.println("parameter payTime: "    + payTime);
-			System.out.println("parameter payMehtod: "  + payMehtod);
-			System.out.println("parameter servSurvey: " + servSurvey);
-			System.out.println("parameter oriPrice: "   + oriPrice);
-			System.out.println("parameter totPaid: "    + totPaid);
-			System.out.println("parameter custId: "     + custId);
+			System.out.println(insertSQL.toString());
+			System.out.println("parameter 1 paymentCd: "  + paymentCd);
+			System.out.println("parameter 2 order: "      + order);
+			System.out.println("parameter 3 payTime: "    + payTime);
+			System.out.println("parameter 4 payMehtod: "  + payMehtod);
+			System.out.println("parameter 5 servSurvey: " + servSurvey);
+			System.out.println("parameter 6 oriPrice: "   + oriPrice);
+			System.out.println("parameter 7 totPaid: "    + totPaid);
+			System.out.println("parameter 8 custId: "     + custId);
 
-			stat.executeUpdate("INSERT INTO PAYMENTS (PAYMENTCODE,ORDERID,PAYMENTTIME,PAYMENTMETHOD,SERVICESURVEY,ORIGINALPRICE,TOTALPAID,CUSTOMERID)"
-					+ "VALUES ('" + paymentCd + "','"
-					+ order + "', "
-					+ payTime + ", '"
-					+ payMehtod + "', '"
-					+ servSurvey + "', '"
-					+ oriPrice + "', '"
-					+ totPaid + "', '"
-					+ custId +
-					"')");
+			PreparedStatement pstat = conn.prepareStatement(insertSQL.toString());
 
-			try (ResultSet result = stat.executeQuery("SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'")) {
-				if (result.next()) {
-					System.out.println(result.getString(1));
-					dbresult = result.getString(1);
-				} else {
-					System.out.println("ERROR IN DB");
-					dbresult = "ERROR IN DB";
+			pstat.setString(1,paymentCd);
+			pstat.setString(2,order);
+			pstat.setString(3,payTime);
+			pstat.setString(4,payMehtod);
+			pstat.setString(5,servSurvey);
+			pstat.setString(6,oriPrice);
+			pstat.setString(7,totPaid);
+			pstat.setString(8,custId);
+
+			if (pstat.executeUpdate() > 0){
+				try (ResultSet result = stat.executeQuery("SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'")) {
+					if (result.next()) {
+						System.out.println(result.getString(1));
+						dbresult = result.getString(1);
+					} else {
+						System.out.println("ERROR IN DB getting new inserted value");
+						dbresult = "ERROR IN DB getting new inserted value";
+					}
 				}
 			}
-
+			else {
+				System.out.println("ERROR IN DB INSERT result <= 0");
+				dbresult = "ERROR IN DB INSERT result <= 0";
+			}
 		}
 		return dbresult;
 	}
@@ -165,10 +182,10 @@ public class DatabaseClient {
 		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
 			if (paymentCd.isEmpty()) {
 				query = "SELECT * FROM PAYMENTS WHERE rownum <= 50 ORDER BY PAYMENTTIME DESC";
-				System.out.println("parameter paymentCd has not been sent");
+				System.out.println("parameter paymentCd has not been sent : " + query);
 			} else {
 				query = "SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'";
-				System.out.println("parameter paymentCd: " + paymentCd);
+				System.out.println("parameter paymentCd: " + paymentCd + " : " + query);
 			}
 
 			try (ResultSet result2 = stat.executeQuery(query)) {
