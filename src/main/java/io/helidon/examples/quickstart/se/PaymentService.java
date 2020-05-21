@@ -17,6 +17,8 @@
 package io.helidon.examples.quickstart.se;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 
 //import java.util.List;
@@ -164,15 +166,15 @@ public class PaymentService implements Service {
 				DatabaseClient dbClient = new DatabaseClient();
 
 				// Get parameters from json object
-				String paymentCd = dbClient.getPaymentCodeFromSequence();
+				String paymentCd       = dbClient.getPaymentCodeFromSequence();
 				String tempPaymentTime = jo.getString("paymentTime");
-				String paymentTime = "TO_TIMESTAMP('" + tempPaymentTime + "', 'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"')";
-				String orderId = jo.getString("orderId");
-				String paymentMethod = jo.getString("paymentMethod");
-				String serviceSurvey = jo.getString("serviceSurvey");
-				String originalPrice = jo.getString("originalPrice");
-				String totalPaid = jo.getString("totalPaid");
-				String customerId = jo.getString("customerId");
+				String paymentTime     = "TO_TIMESTAMP('" + tempPaymentTime + "', 'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"')";
+				String orderId         = jo.getString("orderId");
+				String paymentMethod   = jo.getString("paymentMethod");
+				String serviceSurvey   = jo.getString("serviceSurvey");
+				String originalPrice   = jo.getString("originalPrice");
+				String totalPaid       = jo.getString("totalPaid");
+				String customerId      = jo.getString("customerId");
 
 				// Call database
 
@@ -186,14 +188,14 @@ public class PaymentService implements Service {
 				response.status(Http.Status.OK_200).send(returnObject);
 			}
 			catch (Exception ex) {
-				System.out.println("ERROR getPaymentCode: " + ex.getMessage());
-				System.out.println("StackTrace : " + ex.getStackTrace().toString());
+				System.err.println("ERROR getPaymentCode: " + ex.getMessage());
+				ex.printStackTrace(System.err);			
+				
 				JsonObject errorObject = JSON.createObjectBuilder()
 									.add("error",ex.getMessage())
 									.build();
 				response.status(Http.Status.INTERNAL_SERVER_ERROR_500).send(errorObject);
 			}
-
 		}
 	}
 

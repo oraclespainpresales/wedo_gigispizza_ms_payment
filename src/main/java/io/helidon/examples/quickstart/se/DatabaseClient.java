@@ -44,13 +44,26 @@ public class DatabaseClient {
 		return paymentCd;
 	}
 
-	public String insertPayment(String paymentCode, String orderId, String paymentTime, String paymentMehtod,
-								String serviceSurvey, String originalPrice, String totalPied, String customerId) throws IOException {
+	public String insertPayment(String paymentCode, 
+								String orderId, 
+								String paymentTime, 
+								String paymentMehtod,
+								String serviceSurvey, 
+								String originalPrice, 
+								String totalPied, 
+								String customerId) throws IOException {
 
 		String dbresult = "";
 
 		try {
-			dbresult = executeInsertPayment(paymentCode, orderId, paymentTime, paymentMehtod, serviceSurvey, originalPrice, totalPied, customerId);
+			dbresult = executeInsertPayment(paymentCode, 
+											orderId, 
+											paymentTime, 
+											paymentMehtod, 
+											serviceSurvey, 
+											originalPrice, 
+											totalPied, 
+											customerId);
 		} catch (SQLException ex) {
 			for (Throwable t : ex)
 				t.printStackTrace();
@@ -80,8 +93,14 @@ public class DatabaseClient {
 	 * Executes the insert SQL operation against the database
 	 *
 	 */
-	private String executeInsertPayment(String paymentCd, String order, String payTime, String payMehtod,
-											  String servSurvey, String oriPrice, String totPaid, String custId) throws SQLException, IOException {
+	private String executeInsertPayment(String paymentCd, 
+										String order, 
+										String payTime, 
+										String payMehtod,
+										String servSurvey, 
+										String oriPrice, 
+										String totPaid, 
+										String custId) throws SQLException, IOException {
 
 		String dbresult = "";
 		// try (Connection conn = getConnectionNoFile();
@@ -130,11 +149,11 @@ public class DatabaseClient {
 	private DatabaseResult executeSelectPayments(String paymentCd) throws SQLException, IOException {
 		/**
 		 TODO use ArrayList lines instead of String[][] selectLine to optimize storage
-		 only used to initialize with some values. 1000 columns and 50000 lines should
+		 only used to initialize with some values. 100 columns and 500 lines should
 		 be enough
 		 */
-		int maxNumberOfColumnsTable = 1000;
-		int maxNumberOfLinesTable   = 50000;
+		int maxNumberOfColumnsTable = 100;
+		int maxNumberOfLinesTable   = 500;
 
 		String[][] selectLine     = new String[maxNumberOfLinesTable][maxNumberOfColumnsTable];
 		ArrayList<String> lines   = new ArrayList<String>();
@@ -145,7 +164,7 @@ public class DatabaseClient {
 
 		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
 			if (paymentCd.isEmpty()) {
-				query = "SELECT * FROM PAYMENTS ORDER BY PAYMENTTIME DESC";
+				query = "SELECT * FROM PAYMENTS WHERE rownum <= 50 ORDER BY PAYMENTTIME DESC";
 				System.out.println("parameter paymentCd has not been sent");
 			} else {
 				query = "SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'";
@@ -180,9 +199,13 @@ public class DatabaseClient {
 				System.out.print("\nlines length :" + lines.size());
 			}
 		}
-
-		return new DatabaseResult(lines, selectLine, selectLineColumnCount, numColumnsListArray, lines.size(),
-				selectLinesCount);
+		
+		return new DatabaseResult(lines, 
+								  selectLine, 
+								  selectLineColumnCount, 
+								  numColumnsListArray, 
+								  lines.size(),
+								  selectLinesCount);
 	}
 
 	/**
@@ -224,38 +247,16 @@ public class DatabaseClient {
 		 * props.getProperty("jdbc.password");
 		 *
 		 */
-		String javaHome;
-		String sqldbUrl;
-		String sqldbUsername;
-		String sqldbPassword;
+		String javaHome      = System.getenv("JAVA_HOME");;
+		String sqldbUrl      = System.getenv("SQLDB_URL");;
+		String sqldbUsername = System.getenv("SQLDB_USERNAME");;
+		String sqldbPassword = System.getenv("SQLDB_PASSWORD");;
 
-		javaHome = System.getenv("JAVA_HOME");
-		System.out.println("\nJAVA_HOME: " + javaHome);
-
-		sqldbUrl = System.getenv("SQLDB_URL");
-		System.out.println("\nSQLDB_URL: " + sqldbUrl);
-
-		sqldbUsername = System.getenv("SQLDB_USERNAME");
-		System.out.println("\nSQLDB_USERNAME: " + sqldbUsername);
-
-		sqldbPassword = System.getenv("SQLDB_PASSWORD");
-		System.out.println("\nSQLDB_PASSWORD: " + "********");
-
-		// If env vars are null replace with value from file database.properties
-		System.out.println("\nSome env vars are null. Replacing with values from database.properties:");
-
-		if (sqldbUrl == null)
-			sqldbUrl = "jdbc:oracle:thin:@//130.61.124.136:1521/dodbhp_pdb1.sub03010825490.devopsvcn.oraclevcn.com";
-		if (sqldbUsername == null)
-			sqldbUsername = "microservice";
-		if (sqldbPassword == null)
-			sqldbPassword = "AAZZ__welcomedevops123";
-
-		System.out.println("\nSQLDB_URL: " + sqldbUrl);
-		System.out.println("\nSQLDB_USERNAME: " + sqldbUsername);
-		System.out.println("\nSQLDB_PASSWORD: " + "********");
-
+		System.out.println("JAVA_HOME:      " + javaHome);
+		System.out.println("SQLDB_URL:      " + sqldbUrl);
+		System.out.println("SQLDB_USERNAME: " + sqldbUsername);
+		System.out.println("SQLDB_PASSWORD: " + "********");
+		
 		return DriverManager.getConnection(sqldbUrl, sqldbUsername, sqldbPassword);
 	}
-
 }
