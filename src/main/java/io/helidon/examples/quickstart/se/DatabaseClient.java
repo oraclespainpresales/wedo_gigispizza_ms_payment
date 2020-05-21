@@ -173,7 +173,7 @@ public class DatabaseClient {
 
 		try (Connection conn = getConnectionFromEnvVars(); Statement stat = conn.createStatement()) {
 			if (paymentCd.isEmpty()) {
-				query = "SELECT * FROM PAYMENTS WHERE rownum <= " + maxNumRows + " ORDER BY PAYMENTTIME DESC";
+				query = "SELECT * FROM (SELECT * FROM PAYMENTS ORDER BY PAYMENTTIME DESC) WHERE rownum <= " + maxNumRows;
 				System.out.println("parameter paymentCd has not been sent : " + query);
 			} else {
 				query = "SELECT * FROM PAYMENTS where PAYMENTCODE = '" + paymentCd + "'";
