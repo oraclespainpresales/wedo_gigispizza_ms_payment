@@ -18,15 +18,15 @@ build:
       cache_repo: true
       version: 3.6.0
 
-docker-image-creation:
-  steps:
+#docker-image-creation:
+#  steps:
     # steps to create the docker image of the microservice.    
     - internal/docker-build:
       docker-file: Dockerfile
       image-name: wedoinfra/wedodevops/madrid/mspayment
       
-docker-image-to-ocir:
-  steps:
+#docker-image-to-ocir:
+#  steps:
     - internal/docker-push:                  
       tag: $WERCKER_GIT_COMMIT      
       registry: $OCIR_URL
