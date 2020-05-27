@@ -23,9 +23,13 @@ docker-image-creation:
     # steps to create the docker image of the microservice.    
     - internal/docker-build:
       docker-file: Dockerfile
-      image-name: madrid/mspayment
-      username: $OCI_TENANCY_NAME/$OCIR_USERNAME # Registry username
-      password: $OCIR_PASSWORD # Registry password
+      image-name: mspayment
+      
+docker-image-to-ocir:
+  steps:
+    - internal/docker-push:                  
+      tag: $WERCKER_GIT_COMMIT      
       registry: $OCIR_URL
+      username: $OCI_TENANCY_NAME/$OCIR_USERNAME # Registry username
+      password: $OCIR_PASSWORD                   # Registry password             
       repository: $REPO
-
