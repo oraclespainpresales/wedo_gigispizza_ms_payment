@@ -33,3 +33,4 @@ build:
       username: $OCI_TENANCY_NAME/$OCIR_USERNAME # Registry username
       password: $OCIR_PASSWORD                   # Registry password             
       repository: wedoinfra/wedodevops/madrid/mspayment
+##
