@@ -17,4 +17,4 @@ build:
       goals: clean install
       cache_repo: true
       version: 3.6.0
-    
+    # Next we create the Docker image
