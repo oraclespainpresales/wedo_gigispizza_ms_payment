@@ -23,7 +23,7 @@ docker-image-creation:
     # steps to create the docker image of the microservice.    
     - internal/docker-build:
       docker-file: Dockerfile
-      image-name: mspayment
+      image-name: wedoinfra/wedodevops/madrid/mspayment
       
 docker-image-to-ocir:
   steps:
