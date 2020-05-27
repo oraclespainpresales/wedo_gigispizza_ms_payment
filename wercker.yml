@@ -19,6 +19,7 @@ build:
       version: 3.6.0
 
 docker-image-creation:
+  steps:
     # steps to create the docker image of the microservice.    
     - internal/docker-build:
       docker-file: Dockerfile
