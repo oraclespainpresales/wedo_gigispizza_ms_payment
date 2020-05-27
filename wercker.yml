@@ -17,4 +17,14 @@ build:
       goals: clean install      
       cache_repo: true
       version: 3.6.0
-    # Next we create the Docker imag
+
+docker-image-creation:
+    # steps to create the docker image of the microservice.    
+    - internal/docker-build:
+      docker-file: Dockerfile
+      image-name: madrid/mspayment
+      username: $OCI_TENANCY_NAME/$OCIR_USERNAME # Registry username
+      password: $OCIR_PASSWORD # Registry password
+      registry: $OCIR_URL
+      repository: $REPO
+
