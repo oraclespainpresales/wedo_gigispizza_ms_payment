@@ -14,7 +14,7 @@ build:
   steps:
     # https://github.com/wercker/step-maven
     - wercker/maven:
-      goals: clean install
+      goals: clean install      
       cache_repo: true
       version: 3.6.0
     # Next we create the Docker image
